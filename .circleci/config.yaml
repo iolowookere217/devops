@@ -1,0 +1,104 @@
+version: 2.1
+
+orbs:
+  sam: circleci/aws-sam-serverless@3.1.0
+
+commands:
+  destroy-cluster:
+    description: Destroy EKS Cluster.
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            eksctl delete cluster --name udagram
+
+  install-kubectl-and-eksctl:
+    description: install kubectl and eksctl
+    steps:
+      - run:
+          name: Installing kubectl and eksctl
+          command: |
+            yum install tar gzip -y
+            curl --silent --location -o /usr/local/bin/kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/kubectl
+            chmod +x /usr/local/bin/kubectl
+            mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+            kubectl version --client
+
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            mv /tmp/eksctl /usr/local/bin
+            eksctl version
+jobs:
+  lint-app:
+    docker:
+      - image: python:3.8
+    steps:
+      - checkout
+      - run:
+          name: Python linting
+          command: |
+            pip install flake8  
+            flake8 app.py
+
+  build-and-push-node1:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Build docker container for V1
+          command: |
+            apt-get update
+            apt-get install -y python3 python3-pip
+            pip install flask
+            docker build -t  iolowookere217/devops:v1 .
+            docker login -u iolowookere217 -p $DOCKERPASS
+            docker push iolowookere217/devops:v1
+
+  create-eks-cluster-app:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - install-kubectl-and-eksctl
+      - run:
+          name: Creating K8S cluster
+          command: |
+            echo
+            eksctl create cluster \
+            --name devopsproject \
+            --region us-east-1 \
+            --with-oidc \
+            --ssh-access \
+            --ssh-public-key udacity
+            kubectl get nodes -o wide
+            kubectl create namespace node-namespace
+            aws eks update-kubeconfig --name devopsproject --region us-east-1
+      - run:
+          name: Deploying v1
+          command: |
+            kubectl apply -f v1.yml
+      - destroy-cluster
+
+  smoke-test-v1:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - install-kubectl-and-eksctl
+      - run:
+          name: Installing dependencies
+          command: |
+            echo
+            yum install jq -y
+      - destroy-cluster
+
+workflows:
+  the_jobs:
+    jobs:
+      - lint-app
+      - build-and-push-node1:
+          requires: [lint-app]
+      - create-eks-cluster-app:
+          requires: [build-and-push-node1]
+      - smoke-test-v1:
+          requires: [lint-app]

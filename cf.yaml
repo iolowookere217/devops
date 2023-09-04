@@ -6,7 +6,7 @@ Resources:
   WebAppInstance:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-053b0d53c279acc90 # Ubuntu ImageID valid only in us-east-1 region. You can use the ImageId locator https://cloud-images.ubuntu.com/locator/ec2/
+      ImageId: ami-0d5eff06f840b45e9 # Ubuntu ImageID valid only in us-east-1 region. You can use the ImageId locator https://cloud-images.ubuntu.com/locator/ec2/
       InstanceType: t2.micro
       KeyName: new-key # <------your key-pair name
       SecurityGroupIds:
