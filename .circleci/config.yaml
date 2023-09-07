@@ -11,7 +11,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            eksctl delete cluster --name udagram
+            eksctl delete cluster --name devopsproject
 
   install-kubectl-and-eksctl:
     description: install kubectl and eksctl
@@ -47,12 +47,9 @@ jobs:
       - run:
           name: Build docker container for V1
           command: |
-            apt-get update
-            apt-get install -y python3 python3-pip
-            pip install flask
-            docker build -t  iolowookere217/devops:v1 .
+            docker build -t  iolowookere217/my-webapp:v1 .
             docker login -u iolowookere217 -p $DOCKERPASS
-            docker push iolowookere217/devops:v1
+            docker push iolowookere217/mywebapp:v1
 
   create-eks-cluster-app:
     docker:
@@ -69,14 +66,14 @@ jobs:
             --region us-east-1 \
             --with-oidc \
             --ssh-access \
-            --ssh-public-key udacity
+            --ssh-public-key devopsproject
             kubectl get nodes -o wide
             kubectl create namespace node-namespace
             aws eks update-kubeconfig --name devopsproject --region us-east-1
       - run:
           name: Deploying v1
           command: |
-            kubectl apply -f v1.yml
+            kubectl apply -f deploy.yaml
       - destroy-cluster
 
   smoke-test-v1:
