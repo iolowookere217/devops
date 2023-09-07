@@ -37,8 +37,9 @@ jobs:
       - run:
           name: Python linting
           command: |
+            pip install --upgrade pip
             pip install flake8  
-            flake8 app.py
+            flake8 myapp.py
 
   build-and-push-node1:
     machine: true
