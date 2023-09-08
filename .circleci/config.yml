@@ -87,7 +87,7 @@ jobs:
       - run:
           name: Deploying v1
           command: |
-            kubectl apply -f deploy.yaml
+            kubectl apply -f deploy.yml
       - destroy-cluster
 
   smoke-test-v1:
