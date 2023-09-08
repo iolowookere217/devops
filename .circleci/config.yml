@@ -93,6 +93,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - install-kubectl-and-eksctl
       - run:
           name: Delete if cluster exists
           command: |
@@ -108,13 +109,6 @@ jobs:
     steps:
       - checkout
       - install-kubectl-and-eksctl
-      - run:
-          name: Check if Cluster Exists
-          command: |
-            if eksctl get cluster --name devopsproject --region us-east-1; then
-              echo "Cluster already exists. Skipping creation."
-              exit 0  # Exit successfully to skip the rest of the job
-            fi
       - run:
           name: Creating K8S cluster
           command: |
@@ -152,15 +146,15 @@ workflows:
   the_jobs:
     jobs:
       - lint-app
+      - smoke-test-v1:
+          requires: [lint-app]
       - build-and-push-node1:
           requires: [lint-app]
       - delete-existing-ec2-resources:
           requires: [build-and-push-node1]
       - create-ec2-resources-after-deletion:
           requires: [delete-existing-ec2-resources]
-      - create-eks-cluster-app:
-          requires: [delete-existing-EKS-cluster]
       - delete-existing-EKS-cluster:
           requires: [create-ec2-resources-after-deletion]
-      - smoke-test-v1:
-          requires: [lint-app]
+      - create-eks-cluster-app:
+          requires: [delete-existing-EKS-cluster]
