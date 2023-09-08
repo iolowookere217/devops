@@ -95,7 +95,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - install-kubectl-and-
+      - install-kubectl-and-eksctl
       - run:
           name: Check if Cluster Exists
           command: |
