@@ -63,7 +63,7 @@ jobs:
           command: |
             docker build -t iolowookere217/my-webapp:v1 .
             echo "$DOTENV_FILE" | docker login -u iolowookere217 --password-stdin
-            docker push iolowookere217/mywebapp:v1
+            docker push iolowookere217/my-webapp:v1
 
   create-eks-cluster-app:
     docker:
