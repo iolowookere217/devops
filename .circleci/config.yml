@@ -65,9 +65,8 @@ jobs:
       - run:
           name: Delete if Stack Exists
           command: |
-            if aws cloudformation describe-stacks --stack-name devops-stack --region us-east-1; then
-              aws cloudformation delete-stack --stack-name devops-stack --region us-east-1
-            fi
+            aws cloudformation delete-stack --stack-name devops-stack --region us-east-1
+
   # Define a separate job for creating the stack
   create-ec2-resources-after-deletion:
     docker:
