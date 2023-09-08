@@ -63,6 +63,13 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Check if Stack Exists
+          command: |
+            if aws cloudformation describe-stacks --stack-name devops-stack --region us-east-1; then
+              aws cloudformation delete-stack --stack-name devops-stack --region us-east-1
+              aws cloudformation wait stack-delete-complete --stack-name devops-stack --region us-east-1
+            fi
+      - run:
           name: Configure AWS Credentials
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
