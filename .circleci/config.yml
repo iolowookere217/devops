@@ -98,10 +98,7 @@ jobs:
           name: Delete if cluster exists
           command: |
             eksctl delete cluster --name devopsproject
-            while aws eks describe-cluster --name devopsproject --region us-east-1; do
-              echo "Waiting for cluster deletion..."
-              sleep 100 
-            done
+            sleep 100
 
   create-eks-cluster-app:
     docker:
