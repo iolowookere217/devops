@@ -35,7 +35,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Python linting
+          name: Pythdon linting
           command: |
             pip install --upgrade pip
             pip install flake8  
@@ -43,13 +43,26 @@ jobs:
 
   build-and-push-node1:
     machine: true
+    # steps:
+    #   - checkout
+    #   - run:
+    #       name: Build docker container for V1
+    #       command: |
+    #         docker build -t  iolowookere217/my-webapp:v1 .
+    #         docker login -u iolowookere217 -p $DOCKERPASS
+    #         docker push iolowookere217/mywebapp:v1
+
     steps:
       - checkout
       - run:
-          name: Build docker container for V1
+          name: Load .env File
           command: |
-            docker build -t  iolowookere217/my-webapp:v1 .
-            docker login -u iolowookere217 -p $DOCKERPASS
+            echo "$DOTENV_FILE" > .env
+      - run:
+          name: Build and Push Docker Image for deploy
+          command: |
+            docker build -t iolowookere217/my-webapp:v1 .
+            echo "$DOTENV_FILE" | docker login -u iolowookere217 --password-stdin
             docker push iolowookere217/mywebapp:v1
 
   create-eks-cluster-app:
