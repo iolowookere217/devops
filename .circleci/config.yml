@@ -57,7 +57,7 @@ jobs:
             echo "$DOTENV_FILE" | docker login -u iolowookere217 --password-stdin
             docker push iolowookere217/my-webapp:v1
 
-  create-ec2-resources:
+  delete-existing-ec2-resources:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -74,8 +74,13 @@ jobs:
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            aws configure set default.region us-east-1 # Replace with your desired region
+            aws configure set default.region us-east-1
 
+  # Define a separate job for creating the stack
+  create-ec2-resources-after-deletion:
+    docker:
+      - image: amazon/aws-cli
+    steps:
       - run:
           name: Creating EC2 resources
           command: |
@@ -84,6 +89,34 @@ jobs:
               --template-body file://cf.yml \
               --region us-east-1 
             aws cloudformation wait stack-create-complete --stack-name devops-stack --region us-east-1
+
+  # create-ec2-resources:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Check if Stack Exists
+  #         command: |
+  #           if aws cloudformation describe-stacks --stack-name devops-stack --region us-east-1; then
+  #             aws cloudformation delete-stack --stack-name devops-stack --region us-east-1
+  #             aws cloudformation wait stack-delete-complete --stack-name devops-stack --region us-east-1
+  #           fi
+  #     - run:
+  #         name: Configure AWS Credentials
+  #         command: |
+  #           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  #           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  #           aws configure set default.region us-east-1 # Replace with your desired region
+
+  #     - run:
+  #         name: Creating EC2 resources
+  #         command: |
+  #           aws cloudformation create-stack \
+  #             --stack-name devops-stack \
+  #             --template-body file://cf.yml \
+  #             --region us-east-1
+  #           aws cloudformation wait stack-create-complete --stack-name devops-stack --region us-east-1
 
   create-eks-cluster-app:
     docker:
@@ -129,9 +162,11 @@ workflows:
       - lint-app
       - build-and-push-node1:
           requires: [lint-app]
-      - create-ec2-resources:
+      - delete-existing-ec2-resources:
           requires: [build-and-push-node1]
+      - create-ec2-resources-after-deletion:
+          requires: [delete-existing-ec2-resources]
       - create-eks-cluster-app:
-          requires: [create-ec2-resources]
+          requires: [create-ec2-resources-after-deletion]
       - smoke-test-v1:
           requires: [lint-app]
