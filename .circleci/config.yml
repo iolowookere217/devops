@@ -118,7 +118,7 @@ jobs:
             --with-oidc \
             --ssh-access \
             --ssh-public-key new-key
-            --node-zones us-east-1a
+            --node-zones us-east-1b
             kubectl get nodes -o wide
             kubectl create namespace node-namespace
             aws eks update-kubeconfig --name devopsproject --region us-east-1
