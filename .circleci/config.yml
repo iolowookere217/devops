@@ -115,7 +115,9 @@ workflows:
       - lint-app
       - build-and-push-node1:
           requires: [lint-app]
-      - create-eks-cluster-app:
+      - create-ec2-resources:
           requires: [build-and-push-node1]
+      - create-eks-cluster-app:
+          requires: [create-ec2-resources]
       - smoke-test-v1:
           requires: [lint-app]
