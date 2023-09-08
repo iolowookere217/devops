@@ -88,18 +88,6 @@ jobs:
               --region us-east-1 
             aws cloudformation wait stack-create-complete --stack-name devops-stack --region us-east-1
 
-  delete-existing-EKS-cluster:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - install-kubectl-and-eksctl
-      - run:
-          name: Delete if cluster exists
-          command: |
-            eksctl delete cluster --name devopsproject
-            sleep 100
-
   create-eks-cluster-app:
     docker:
       - image: amazon/aws-cli
@@ -151,7 +139,5 @@ workflows:
           requires: [build-and-push-node1]
       - create-ec2-resources-after-deletion:
           requires: [delete-existing-ec2-resources]
-      - delete-existing-EKS-cluster:
-          requires: [create-ec2-resources-after-deletion]
       - create-eks-cluster-app:
-          requires: [delete-existing-EKS-cluster]
+          requires: [create-ec2-resources-after-deletion]
