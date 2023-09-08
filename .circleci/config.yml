@@ -88,6 +88,17 @@ jobs:
               --region us-east-1 
             aws cloudformation wait stack-create-complete --stack-name devops-stack --region us-east-1
 
+  delete-existing-EKS-cluster:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Delete if cluster exists
+          command: |
+            eksctl delete cluster --name devopsproject
+            sleep 100
+
   create-eks-cluster-app:
     docker:
       - image: amazon/aws-cli
@@ -145,6 +156,8 @@ workflows:
       - create-ec2-resources-after-deletion:
           requires: [delete-existing-ec2-resources]
       - create-eks-cluster-app:
+          requires: [delete-existing-EKS-cluster]
+      - delete-existing-EKS-cluster:
           requires: [create-ec2-resources-after-deletion]
       - smoke-test-v1:
           requires: [lint-app]
