@@ -65,8 +65,8 @@ jobs:
       - run:
           name: Delete if Stack Exists
           command: |
-            aws cloudformation delete-stack --stack-name devops-stack --region us-east-1
-            aws cloudformation wait stack-delete-complete --stack-name devops-stack --region us-east-1
+            aws cloudformation delete-stack --stack-name devops-stack --region us-east-1a
+            aws cloudformation wait stack-delete-complete --stack-name devops-stack --region us-east-1a
 
   # Define a separate job for creating the stack
   create-ec2-resources-after-deletion:
@@ -79,15 +79,15 @@ jobs:
           command: |
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            aws configure set default.region us-east-1
+            aws configure set default.region us-east-1a
       - run:
           name: Creating EC2 resources
           command: |
             aws cloudformation create-stack \
               --stack-name devops-stack \
               --template-body file://cf.yml \
-              --region us-east-1 
-            aws cloudformation wait stack-create-complete --stack-name devops-stack --region us-east-1
+              --region us-east-1a 
+            aws cloudformation wait stack-create-complete --stack-name devops-stack --region us-east-1a
 
   # create-ec2-resources:
   #   docker:
@@ -97,16 +97,16 @@ jobs:
   #     - run:
   #         name: Check if Stack Exists
   #         command: |
-  #           if aws cloudformation describe-stacks --stack-name devops-stack --region us-east-1; then
-  #             aws cloudformation delete-stack --stack-name devops-stack --region us-east-1
-  #             aws cloudformation wait stack-delete-complete --stack-name devops-stack --region us-east-1
+  #           if aws cloudformation describe-stacks --stack-name devops-stack --region us-east-1a; then
+  #             aws cloudformation delete-stack --stack-name devops-stack --region us-east-1a
+  #             aws cloudformation wait stack-delete-complete --stack-name devops-stack --region us-east-1a
   #           fi
   #     - run:
   #         name: Configure AWS Credentials
   #         command: |
   #           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
   #           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-  #           aws configure set default.region us-east-1 # Replace with your desired region
+  #           aws configure set default.region us-east-1a # Replace with your desired region
 
   #     - run:
   #         name: Creating EC2 resources
@@ -114,8 +114,8 @@ jobs:
   #           aws cloudformation create-stack \
   #             --stack-name devops-stack \
   #             --template-body file://cf.yml \
-  #             --region us-east-1
-  #           aws cloudformation wait stack-create-complete --stack-name devops-stack --region us-east-1
+  #             --region us-east-1a
+  #           aws cloudformation wait stack-create-complete --stack-name devops-stack --region us-east-1a
 
   create-eks-cluster-app:
     docker:
@@ -129,13 +129,13 @@ jobs:
             echo
             eksctl create cluster \
             --name devopsproject \
-            --region us-east-1 \
+            --region us-east-1a \
             --with-oidc \
             --ssh-access \
             --ssh-public-key new-key
             kubectl get nodes -o wide
             kubectl create namespace node-namespace
-            aws eks update-kubeconfig --name devopsproject --region us-east-1
+            aws eks update-kubeconfig --name devopsproject --region us-east-1a
       - run:
           name: Deploying v1
           command: |
