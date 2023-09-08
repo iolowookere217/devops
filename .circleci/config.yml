@@ -67,7 +67,6 @@ jobs:
           command: |
             if aws cloudformation describe-stacks --stack-name devops-stack --region us-east-1; then
               aws cloudformation delete-stack --stack-name devops-stack --region us-east-1
-              aws cloudformation wait stack-delete-complete --stack-name devops-stack --region us-east-1
             fi
   # Define a separate job for creating the stack
   create-ec2-resources-after-deletion:
