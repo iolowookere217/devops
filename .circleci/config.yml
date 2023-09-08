@@ -80,6 +80,8 @@ jobs:
   create-ec2-resources-after-deletion:
     docker:
       - image: amazon/aws-cli
+    depends_on:
+      - delete-existing-ec2-resources
     steps:
       - run:
           name: Creating EC2 resources
