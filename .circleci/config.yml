@@ -63,6 +63,13 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Configure AWS Credentials
+          command: |
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region us-east-1 # Replace with your desired region
+
+      - run:
           name: Creating EC2 resources
           command: |
             aws cloudformation create-stack \
@@ -95,6 +102,45 @@ jobs:
           command: |
             kubectl apply -f deploy.yml
       - destroy-cluster
+
+  # create-ec2-resources:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Creating EC2 resources
+  #         command: |
+  #           aws cloudformation create-stack \
+  #             --stack-name devops-stack \
+  #             --template-body file://cf.yml \
+  #             --region us-east-1
+  #           aws cloudformation wait stack-create-complete --stack-name devops-stack --region us-east-1
+
+  # create-eks-cluster-app:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - install-kubectl-and-eksctl
+  #     - run:
+  #         name: Creating K8S cluster
+  #         command: |
+  #           echo
+  #           eksctl create cluster \
+  #           --name devopsproject \
+  #           --region us-east-1 \
+  #           --with-oidc \
+  #           --ssh-access \
+  #           --ssh-public-key devopsproject
+  #           kubectl get nodes -o wide
+  #           kubectl create namespace node-namespace
+  #           aws eks update-kubeconfig --name devopsproject --region us-east-1
+  #     - run:
+  #         name: Deploying v1
+  #         command: |
+  #           kubectl apply -f deploy.yml
+  #     - destroy-cluster
 
   smoke-test-v1:
     docker:
