@@ -101,6 +101,7 @@ jobs:
             eksctl create cluster \
             --name devopsproject \
             --region us-east-1 \
+            --zones us-east-1a,us-east-1b,us-east-1c\
             --node-zones us-east-1a,us-east-1b,us-east-1c\
             --with-oidc \
             --ssh-access \
