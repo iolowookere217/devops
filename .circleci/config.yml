@@ -101,10 +101,10 @@ jobs:
             eksctl create cluster \
             --name devopsproject \
             --region us-east-1 \
+            --node-zones us-east-1a,us-east-1b,us-east-1c\
             --with-oidc \
             --ssh-access \
             --ssh-public-key new-key
-            --node-zones=us-east-1b
             kubectl get nodes -o wide
             kubectl create namespace node-namespace
             aws eks update-kubeconfig --name devopsproject --region us-east-1
