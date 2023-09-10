@@ -60,18 +60,6 @@ jobs:
             echo "$DOTENV_FILE" | docker login -u iolowookere217 --password-stdin
             docker push iolowookere217/my-webapp:v1
 
-  # delete existing stack
-  # delete-existing-ec2-resources:
-  #   docker:
-  #     - image: amazon/aws-cli
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Delete if Stack Exists
-  #         command: |
-  #           aws cloudformation delete-stack --stack-name devops-stack --region us-east-1
-  #           aws cloudformation wait stack-delete-complete --stack-name devops-stack --region us-east-1
-
   # delete existing and create a new stack
   delete-existing-create-new-ec2-resources:
     docker:
@@ -106,7 +94,7 @@ jobs:
           name: Creating K8S cluster
           command: |
             echo
-            eksctl delete cluster --name devopsproject --region us-east-1 --wait
+            # eksctl delete cluster --name devopsproject --region us-east-1 --wait
             eksctl create cluster \
             --name devopsproject \
             --region us-east-1 \
