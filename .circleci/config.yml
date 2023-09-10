@@ -135,7 +135,5 @@ workflows:
           requires: [lint-app]
       - delete-existing-create-new-ec2-resources:
           requires: [build-and-push-node1, smoke-test-v1]
-      # - create-ec2-resources-after-deletion:
-      #     requires: [delete-existing-ec2-resources]
       - delete-existing-create-new-eks-cluster-app:
           requires: [delete-existing-create-new-ec2-resources]
