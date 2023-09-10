@@ -150,4 +150,4 @@ workflows:
       # - create-ec2-resources-after-deletion:
       #     requires: [delete-existing-ec2-resources]
       - delete-existing-create-new-eks-cluster-app:
-          requires: [create-ec2-resources-after-deletion]
+          requires: [delete-existing-create-new-ec2-resources]
