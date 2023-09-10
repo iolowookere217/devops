@@ -23,7 +23,6 @@ commands:
           command: |
             yum install tar gzip -y
             curl https://s3.amazonaws.com/aws-cli/awscli-bundle.zip -o awscli-bundle.zip
-            unzip awscli-bundle.zip
             curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
             chmod +x ./kubectl
             sudo mv ./kubectl /usr/local/bin/kubectl
@@ -145,7 +144,7 @@ workflows:
       - build-and-push-node1:
           requires: [lint-app]
       - delete-existing-ec2-resources:
-          requires: [build-and-push-node1]
+          requires: [build-and-push-node1, smoke-test-v1]
       - create-ec2-resources-after-deletion:
           requires: [delete-existing-ec2-resources]
       - create-eks-cluster-app:
