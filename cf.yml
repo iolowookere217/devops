@@ -12,6 +12,7 @@ Resources:
       SecurityGroupIds:
         - !Ref WebAppSecurityGroup
 
+  # security group to allow HTTP/HTTPS and SSH inbound and outbound traffic"
   WebAppSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
