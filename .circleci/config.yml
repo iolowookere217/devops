@@ -61,19 +61,19 @@ jobs:
             docker push iolowookere217/my-webapp:v1
 
   # delete existing stack
-  delete-existing-ec2-resources:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Delete if Stack Exists
-          command: |
-            aws cloudformation delete-stack --stack-name devops-stack --region us-east-1
-            aws cloudformation wait stack-delete-complete --stack-name devops-stack --region us-east-1
+  # delete-existing-ec2-resources:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Delete if Stack Exists
+  #         command: |
+  #           aws cloudformation delete-stack --stack-name devops-stack --region us-east-1
+  #           aws cloudformation wait stack-delete-complete --stack-name devops-stack --region us-east-1
 
-  # create a new stack
-  create-ec2-resources-after-deletion:
+  # delete existing and create a new stack
+  delete-existing-create-new-ec2-resources:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -81,6 +81,8 @@ jobs:
       - run:
           name: Configure AWS Credentials
           command: |
+            aws cloudformation delete-stack --stack-name devops-stack --region us-east-1
+            aws cloudformation wait stack-delete-complete --stack-name devops-stack --region us-east-1
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
             aws configure set default.region us-east-1
@@ -94,7 +96,7 @@ jobs:
             aws cloudformation wait stack-create-complete --stack-name devops-stack --region us-east-1
 
   # create a new eks cluster
-  create-eks-cluster-app:
+  delete-existing-create-new-eks-cluster-app:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -143,9 +145,9 @@ workflows:
           requires: [lint-app]
       - build-and-push-node1:
           requires: [lint-app]
-      - delete-existing-ec2-resources:
+      - delete-existing-create-new-ec2-resources:
           requires: [build-and-push-node1, smoke-test-v1]
-      - create-ec2-resources-after-deletion:
-          requires: [delete-existing-ec2-resources]
-      - create-eks-cluster-app:
+      # - create-ec2-resources-after-deletion:
+      #     requires: [delete-existing-ec2-resources]
+      - delete-existing-create-new-eks-cluster-app:
           requires: [create-ec2-resources-after-deletion]
