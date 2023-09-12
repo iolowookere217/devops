@@ -99,7 +99,7 @@ jobs:
             eksctl create cluster \
             --name devopsproject \
             --region us-east-1 \
-            --with-oidc \
+            # --with-oidc \
             --ssh-access \
             --ssh-public-key new-key
             kubectl get nodes -o wide
