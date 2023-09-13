@@ -103,11 +103,11 @@ jobs:
             --ssh-access \
             --ssh-public-key new-key
             kubectl get nodes -o wide
-            kubectl create namespace node-devops
+            kubectl create namespace node-namespace
             kubectl apply -f deploy.yml
             kubectl get deployments
             kubectl get services -o wide
-            kubectl get pods --namespace=node-devops
+            kubectl get pods --namespace=node-namespace
             aws eks update-kubeconfig --name devopsproject --region us-east-1
       - run:
           name: Deploying v1
