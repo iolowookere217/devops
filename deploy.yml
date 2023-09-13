@@ -33,14 +33,6 @@ spec:
               containerPort: 5000
           imagePullPolicy: Always
 
-          readinessProbe:
-            exec:
-              commands:
-                - cat
-                - /app/is_ready
-
-
-
 ---
 apiVersion: v1
 kind: Service
