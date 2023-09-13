@@ -95,7 +95,7 @@ jobs:
           name: Creating K8S cluster
           command: |
             echo
-            # eksctl delete cluster --name devopsproject --region us-east-1 --wait
+            eksctl delete cluster --name devopsproject --region us-east-1 --wait
             eksctl create cluster \
             --name devopsproject \
             --region us-east-1 \
@@ -104,14 +104,15 @@ jobs:
             --ssh-public-key new-key
             kubectl get nodes -o wide
             kubectl create namespace node-devops
+            kubectl apply -f deploy.yml
+            kubectl get deployments
+            kubectl get services -o wide
+            kubectl get pods --namespace=node-devops
             aws eks update-kubeconfig --name devopsproject --region us-east-1
       - run:
           name: Deploying v1
           command: |
             kubectl apply -f deploy.yml
-            kubectl get deployments
-            kubectl get services -o wide
-            kubectl get pods --namespace=node-devops
       - destroy-cluster
 
   # smoke test for the app
