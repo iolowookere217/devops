@@ -84,7 +84,7 @@ jobs:
               --region us-east-1 
             aws cloudformation wait stack-create-complete --stack-name devops-stack --region us-east-1
 
-  # create a new eks cluster
+  # delete existing and create a new eks cluster
   delete-existing-create-new-eks-cluster-app:
     docker:
       - image: amazon/aws-cli
@@ -95,13 +95,13 @@ jobs:
           name: Creating K8S cluster
           command: |
             echo
-            # eksctl delete cluster --name devopsproject --region us-east-1 --wait
+            eksctl delete cluster --name devopsproject --region us-east-1 --wait
             eksctl create cluster \
             --name devopsproject \
             --region us-east-1 \
             # --with-oidc \
-            --ssh-access \
-            --ssh-public-key new-key
+            # --ssh-access \
+            # --ssh-public-key new-key
             kubectl get nodes -o wide
             kubectl create namespace node-namespace
             aws eks update-kubeconfig --name devopsproject --region us-east-1
