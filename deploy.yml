@@ -15,7 +15,7 @@ spec:
       labels:
         app: node-label
     spec:
-       affinity:
+      affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
