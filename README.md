@@ -1,6 +1,6 @@
-## used circleci pipeline to automate the deploy of a simple greetings app on aws resources
+## Automate the deployment of a simple greetings app on aws resources from a circleci pipeline
 
-## circleci pipeline ----> config.yml file
+# circleci pipeline ----> config.yml file
 
 ---
 
@@ -196,7 +196,7 @@ Here, I defined the infrastructure specifications in the cf.yml file.
     Value: !Sub http://${WebAppEIP}
     Description: WebApp URL
 
-## Deployments and services ---------> deploy.yml file
+# Deployments and services ---------> deploy.yml file
 
 ---
 
