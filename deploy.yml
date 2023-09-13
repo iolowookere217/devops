@@ -15,16 +15,16 @@ spec:
       labels:
         app: node-label
     spec:
-      # affinity:
-      #   nodeAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #       nodeSelectorTerms:
-      #         - matchExpressions:
-      #             - key: kubernetes.io/arch
-      #               operator: In
-      #               values:
-      #                 - amd64
-      #                 - arm64
+       affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - arm64
       containers:
         - name: node-app
           image: iolowookere217/my-webapp:v1
