@@ -1,6 +1,6 @@
 ## used circleci pipeline to automate the deploy of a simple greetings app on aws resources
 
-## circleci pipeline -----> config.yml file
+## circleci pipeline ----> config.yml file
 
 ---
 
