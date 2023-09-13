@@ -104,8 +104,8 @@ jobs:
             --ssh-public-key new-key
             kubectl get nodes -o wide
             kubectl create namespace node-namespace
-            kubectl apply -f deploy.yml
-            kubectl get deployments
+            kubectl apply -f deploy.yml 
+            kubectl get deployments --namespace=node-namespace
             kubectl get services -o wide
             kubectl get pods --namespace=node-namespace
             aws eks update-kubeconfig --name devopsproject --region us-east-1
