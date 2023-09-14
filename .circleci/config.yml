@@ -112,7 +112,7 @@ jobs:
           name: Creating K8S cluster
           command: |
             echo
-            # eksctl delete cluster --name devopsproject --region us-east-1 --wait
+            eksctl delete cluster --name devopsproject --region us-east-1 --wait
             eksctl create cluster \
             --name devopsproject \
             --region us-east-1 \
@@ -122,10 +122,9 @@ jobs:
             kubectl get nodes -o wide
             kubectl create namespace node-namespace
             kubectl apply -f deploy.yml 
-            kubectl get all --namespace=node-namespace --watch
-            # timeout 15s kubectl get deployments --namespace=node-namespace --watch
-            # timeout 60s kubectl get services -o wide --watch
-            # timeout 60s kubectl get pods --namespace=node-namespace --watch
+            kubectl get deployments --namespace=node-namespace 
+            kubectl get services -o wide 
+            kubectl get pods --namespace=node-namespace 
             aws eks update-kubeconfig --name devopsproject --region us-east-1
       - run:
           name: Deploying v1
