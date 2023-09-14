@@ -27,7 +27,7 @@ spec:
                       - arm64
       containers:
         - name: node-app
-          image: iolowookere217/my-webapp:v1
+          image: iolowookere217/my-nodeapp:v1
           ports:
             - name: tcp
               containerPort: 5000

@@ -35,15 +35,26 @@ commands:
 jobs:
   lint-app:
     docker:
-      - image: python:3.8
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - run:
-          name: Python linting
+          name: Dockerfiles lint
           command: |
-            pip install --upgrade pip
-            pip install flake8  
-            flake8 myapp.py
+            npm install
+            npm run lint
+# jobs:
+#   lint-app:
+#     docker:
+#       - image: python:3.8
+#     steps:
+#       - checkout
+#       - run:
+#           name: Python linting
+#           command: |
+#             pip install --upgrade pip
+#             pip install flake8  
+#             flake8 myapp.py
 
   # build and push docker image for deployment
   build-and-push-node1:
@@ -57,9 +68,14 @@ jobs:
       - run:
           name: Build and Push Docker Image for deploy
           command: |
-            docker build -t iolowookere217/my-webapp:v1 .
+            sudo curl -LO https://nodejs.org/dist/v18.0.0/node-v18.0.0-linux-x64.tar.xz 
+            sudo tar -xvf node-v18.0.0-linux-x64.tar.xz 
+            sudo cp -r node-v18.0.0-linux-x64/{bin,include,lib,share} /usr/ 
+            node --version => v18.0.0
+            sudo apt install nodejs
+            docker build -t iolowookere217/my-nodeapp:v1 .
             echo "$DOTENV_FILE" | docker login -u iolowookere217 --password-stdin
-            docker push iolowookere217/my-webapp:v1
+            docker push iolowookere217/my-nodeapp:v1
 
   # delete existing and create a new stack
   delete-existing-create-new-ec2-resources:
