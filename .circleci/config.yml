@@ -122,9 +122,9 @@ jobs:
             kubectl get nodes -o wide
             kubectl create namespace node-namespace
             kubectl apply -f deploy.yml 
-            kubectl get deployments --namespace=node-namespace
-            kubectl get services -o wide
-            kubectl get pods --namespace=node-namespace
+            timeout 60s kubectl get deployments --namespace=node-namespace --watch
+            timeout 60s kubectl get services -o wide --watch
+            timeout 60s kubectl get pods --namespace=node-namespace --watch
             aws eks update-kubeconfig --name devopsproject --region us-east-1
       - run:
           name: Deploying v1
