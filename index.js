@@ -4,7 +4,7 @@ const morgan = require("morgan");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(morgan("tiny"));
+app.use(morgan("tiny));
 
 //The very root route
 app.get("/", (req, res) => {
