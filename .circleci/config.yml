@@ -43,18 +43,18 @@ jobs:
           command: |
             npm install
             npm run lint
-# jobs:
-#   lint-app:
-#     docker:
-#       - image: python:3.8
-#     steps:
-#       - checkout
-#       - run:
-#           name: Python linting
-#           command: |
-#             pip install --upgrade pip
-#             pip install flake8  
-#             flake8 myapp.py
+  # jobs:
+  #   lint-app:
+  #     docker:
+  #       - image: python:3.8
+  #     steps:
+  #       - checkout
+  #       - run:
+  #           name: Python linting
+  #           command: |
+  #             pip install --upgrade pip
+  #             pip install flake8
+  #             flake8 myapp.py
 
   # build and push docker image for deployment
   build-and-push-node1:
@@ -72,6 +72,7 @@ jobs:
             sudo tar -xvf node-v18.0.0-linux-x64.tar.xz 
             sudo cp -r node-v18.0.0-linux-x64/{bin,include,lib,share} /usr/ 
             node --version => v18.0.0
+            sudo apt-get update
             sudo apt install nodejs
             docker build -t iolowookere217/my-nodeapp:v1 .
             echo "$DOTENV_FILE" | docker login -u iolowookere217 --password-stdin
