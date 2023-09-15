@@ -112,10 +112,8 @@ jobs:
           name: Creating K8S cluster
           command: |
             echo
-            eksctl delete cluster --name devopsproject --region us-east-1 --wait
-            eksctl create cluster \
-            --name devopsproject \
-            --region us-east-1 \
+            # eksctl delete cluster --name devopsproject --region us-east-1 --wait
+            eksctl create cluster --name devopsproject --region us-east-1 \
             --with-oidc \
             --ssh-access \
             --ssh-public-key new-key
