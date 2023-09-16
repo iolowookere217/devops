@@ -1,17 +1,21 @@
-## Automate the deployment of a simple greetings app on aws resources from a circleci pipeline
+# Automate the deployment of a simple greetings app on aws resources from a circleci pipeline
 
-# circleci pipeline -----> config.yml file
+# _circleci pipeline -----> config.yml file_
 
 ---
 
+```sh
 #### version of circleci
+```
 
     version: 2.1
 
     orbs:
     sam: circleci/aws-sam-serverless@3.1.0
 
+```sh
 #### if an error occurs and unable to complete the pipeline process, this step helps to clean up the environment by destroying the created clusters
+```
 
     commands:
     destroy-cluster:
@@ -22,7 +26,9 @@
     command: |
     eksctl delete cluster --name devopsproject
 
+```sh
 #### This step installs kubectl and eksctl on the system by downloading the necessary binaries, setting permissions, and adding them to the system's PATH for easy access.
+```
 
     install-kubectl-and-eksctl:
     description: install kubectl and eksctl
@@ -37,7 +43,9 @@
     mv /tmp/eksctl /usr/local/bin
     eksctl version
 
+```sh
 #### This job, 'lint-app,' uses a Python 3.8 Docker container to perform linting on the 'myapp.py' file using 'flake8' after upgrading pip and installing 'flake8'.
+```
 
     jobs:
     lint-app:
@@ -49,7 +57,9 @@
     pip install flake8
     flake8 myapp.py
 
+```sh
 #### In the 'build-and-push-node1' step, a dedicated machine is used. It checks out the code, loads environment variables from 'DOTENV_FILE' into '.env,' builds a Docker image tagged 'iolowookere217/my-webapp:v1,' and pushes it to a container registry after logging in.
+```
 
     build-and-push-node1:
     machine: true
@@ -66,7 +76,9 @@
             echo "$DOTENV_FILE" | docker login -u iolowookere217 --password-stdin
             docker push iolowookere217/my-webapp:v1
 
+```sh
 #### This step, 'delete-existing-create-new-ec2-resources,' uses an Amazon AWS CLI Docker container. It first delete the existing stack named 'devops-stack' and then configures AWS credentials, then creates EC2 resources by launching a CloudFormation stack named 'devops-stack' using a template file ('cf.yml') in the 'us-east-1' region, and waits for the stack creation to complete. the environment variable are set in circle ci.
+```
 
     delete-existing-create-new-ec2-resources:
     docker:
@@ -90,7 +102,9 @@
             --region us-east-1
           aws cloudformation wait stack-create-complete --stack-name devops-stack --region us-east-1
 
+```sh
 #### This 'delete-existing-create-new-eks-cluster-app' step, employing an Amazon AWS CLI Docker container, first deletes existing kubernetes cluster named 'devopsproject' and then creates a new Kubernetes cluster called 'devopsproject' in the 'us-east-1' region. It verifies the node status, establishes a Kubernetes namespace named 'node-namespace,' updates the 'kubeconfig' for 'devopsproject,' and deploys version 1 of an application ('deploy.yml'). Finally, it references the 'destroy-cluster' step.
+```
 
     delete-existing-create-new-eks-cluster-app:
         docker:
@@ -118,7 +132,9 @@
                 kubectl apply -f deploy.yml
           - destroy-cluster
 
+```sh
 #### 'smoke-test-v1' step, using an Amazon AWS CLI Docker container, installs dependencies, including 'jq,' and references the 'destroy-cluster' step.
+```
 
     smoke-test-v1:
     docker: - image: amazon/aws-cli
@@ -128,7 +144,9 @@
     echo
     yum install jq -y - destroy-cluster
 
+```sh
 #### In the 'the_jobs' workflow: 'lint-app' job runs first. 'smoke-test-v1' and 'build-and-push-node1' jobs run in parallel after 'lint-app. 'delete-existing-ec2-resources' follows 'build-and-push-node1.' 'create-ec2-resources-after-deletion' runs after 'delete-existing-ec2-resources.'Finally, 'create-eks-cluster-app' executes after 'create-ec2-resources-after-deletion,' with dependencies specified accordingly."
+```
 
     workflows:
     the_jobs:
@@ -139,7 +157,7 @@
     requires: [delete-existing-ec2-resources] - create-eks-cluster-app:
     requires: [create-ec2-resources-after-deletion]
 
-# Infrastructure as Code (IaC) -----> cf.yml
+# _Infrastructure as Code (IaC) -----> cf.yml_
 
 ---
 
@@ -147,13 +165,17 @@
 
 Here, I defined the infrastructure specifications in the cf.yml file.
 
+```sh
 #### create a cloud account and ssh access for the instance
+```
 
 - 1. Create an AWS account
 - 2. Create an IAM user account select the programmatic option
 - 3. Create a key pair
 
+```sh
 #### create the t2-micro EC2 Instance in the us-east-1 region on AWS
+```
 
     Resources:
     WebAppInstance:
@@ -164,7 +186,9 @@ Here, I defined the infrastructure specifications in the cf.yml file.
     KeyName: new-key # <------your key-pair name
     SecurityGroupIds: - !Ref WebAppSecurityGroup
 
+```sh
 #### A security group resource that allows traffic in, on port 22 for SSH and ports 80 and 443 for HTTP and HTTPS traffic.
+```
 
     WebAppSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -182,7 +206,9 @@ Here, I defined the infrastructure specifications in the cf.yml file.
     ToPort: 22
     CidrIp: 0.0.0.0/0
 
+```sh
 #### assign an elastic IP address to Instance
+```
 
     WebAppEIP:
     Type: AWS::EC2::EIP
@@ -196,14 +222,15 @@ Here, I defined the infrastructure specifications in the cf.yml file.
     Value: !Sub http://${WebAppEIP}
     Description: WebApp URL
 
-# Deployments and services -----> deploy.yml file
+# _Deployments and services -----> deploy.yml file_
 
 ---
 
 ## Deployment (node-app-deployment):
 
+````sh
 #### Deploys an application named 'node-app' with three replicas. Applies node affinity, ensuring it runs on nodes with specified architectures (amd64 or arm64). Pulls the 'iolowookere217/my-webapp:v1' image and exposes it on port 5000.
-
+---
         apiVersion: apps/v1
         kind: Deployment
         metadata:
@@ -234,8 +261,9 @@ Here, I defined the infrastructure specifications in the cf.yml file.
         imagePullPolicy: Always
 
 ## Service (node-service):
-
+```sh
 #### Exposes the 'node-label' application as a LoadBalancer service on port 5000 within the 'node-namespace.' Routes traffic to pods labeled with 'app: node-label.'
+````
 
         apiVersion: v1
         kind: Service
