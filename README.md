@@ -1,4 +1,4 @@
-## Automate the deployment of a simple greetings app on aws resources from a circleci pipeline
+## Automate the deployment of a simple web app on aws resources from a circleci pipeline
 
 # circleci pipeline -----> config.yml file
 
