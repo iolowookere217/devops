@@ -9,28 +9,28 @@ Resources:
       ImageId: ami-0d5eff06f840b45e9 # Ubuntu ImageID valid only in us-east-1 region. You can use the ImageId locator https://cloud-images.ubuntu.com/locator/ec2/
       InstanceType: t2.micro
       KeyName: new-key # <------your key-pair name
-      # SecurityGroupIds:
-      #   - !Ref WebAppSecurityGroup
+      SecurityGroupIds:
+        - !Ref WebAppSecurityGroup
 
   # security group to allow HTTP/HTTPS and SSH inbound and outbound traffic"
-  # WebAppSecurityGroup:
-  #   Type: AWS::EC2::SecurityGroup
-  #   Properties:
-  #     GroupName: !Join ["-", [webapp-security-group, dev]]
-  #     GroupDescription: "Allow HTTP/HTTPS and SSH inbound and outbound traffic"
-  #     SecurityGroupIngress:
-  #       - IpProtocol: tcp
-  #         FromPort: 80
-  #         ToPort: 85
-  #         CidrIp: 0.0.0.0/0
-  #       - IpProtocol: tcp
-  #         FromPort: 443
-  #         ToPort: 443
-  #         CidrIp: 0.0.0.0/0
-  #       - IpProtocol: tcp
-  #         FromPort: 22
-  #         ToPort: 22
-  #         CidrIp: 0.0.0.0/0
+  WebAppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Join ["-", [webapp-security-group, dev]]
+      GroupDescription: "Allow HTTP/HTTPS and SSH inbound and outbound traffic"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 85
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
 
   # assign an elastic IP address to Instance
   WebAppEIP:

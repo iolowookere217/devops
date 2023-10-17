@@ -1,17 +1,9 @@
-FROM ubuntu
-
-RUN apt-get update
-RUN apt-get install -y python3 python3-pip
-RUN pip install flask
+FROM node:lts-alpine3.12
 
 WORKDIR /app
 
 COPY . .
 
-EXPOSE 80 
-EXPOSE 84 
-EXPOSE 8001 
-EXPOSE 443
+RUN yarn
 
-ENTRYPOINT FLASK_APP=/app/myapp.py flask run --host=0.0.0.0
- 
+CMD ["yarn", "start"]

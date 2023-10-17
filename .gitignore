@@ -3,5 +3,5 @@ package.json
 package-lock.json
 yarn.lock
 .eslintrc.js
-Dockerfilecopy.txt
+Dockerfile.txt
 

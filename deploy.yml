@@ -34,7 +34,7 @@ spec:
           imagePullPolicy: Always
           readinessProbe:
             httpGet:
-              path: /how are you # Replace with the path to your readiness endpoint
+              path: /healthz # Replace with the path to your readiness endpoint
               port: 5000 # Replace with the container port
             initialDelaySeconds: 5 # Delay before the first probe
             periodSeconds: 10
